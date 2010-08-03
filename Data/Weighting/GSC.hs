@@ -12,6 +12,34 @@ import Data.Clustering.Hierarchical (Dendrogram(..))
 -- @0@ (in the leafs) and @1@.  The final weights are normalized
 -- to average to @1@ (i.e. sum to the number of sequences, the
 -- same they would sum if all weights were @1@).
+--
+-- For example, suppose we have
+--
+-- @
+-- dendro = Branch 0.8
+--            (Branch 0.5
+--              (Branch 0.2
+--                (Leaf 'A')
+--                (Leaf 'B'))
+--              (Leaf 'C'))
+--            (Leaf 'D')
+-- @
+--
+-- This is the same as GSC paper's example, however they used
+-- similarities while we are using distances (i.e. @fmap (1-)
+-- dendro@ would be exactly their example).  Then @gsc dendro@ is
+--
+-- @
+-- gsc dendro == Branch 0.8
+--                 (Branch 0.5
+--                   (Branch 0.2
+--                     (Leaf ('A',0.7608695652173914))
+--                     (Leaf ('B',0.7608695652173914)))
+--                   (Leaf ('C',1.0869565217391306)))
+--                 (Leaf ('D',1.3913043478260871))
+-- @
+--
+-- which is exactly what they calculated.
 gsc :: Fractional d => Dendrogram d a -> Dendrogram d (a, d)
 gsc (Leaf x) = Leaf (x,1)
 gsc dendro   = let (wsum, nsum, r) = go wfinal undefined [] dendro
