@@ -26,8 +26,9 @@ import Data.Clustering.Hierarchical (Dendrogram(..))
 -- @
 --
 -- This is the same as GSC paper's example, however they used
--- similarities while we are using distances (i.e. @fmap (1-)
--- dendro@ would be exactly their example).  Then @gsc dendro@ is
+-- similarities while we are using distances (i.e. applying
+-- @(1-)@ to the distances would give exactly their example).
+-- Then @gsc dendro@ is
 --
 -- @
 -- gsc dendro == Branch 0.8
