@@ -41,17 +41,18 @@ import Data.Clustering.Hierarchical (Dendrogram(..))
 --
 -- which is exactly what they calculated.
 gsc :: Fractional d => Dendrogram d a -> Dendrogram d (a, d)
-gsc (Leaf x) = Leaf (x,1)
-gsc dendro   = let (wsum, nsum, r) = go wfinal undefined [] dendro
-                   wfinal = (wsum / fromIntegral nsum)
-               in r
+gsc (Leaf x)   = Leaf (x,1)
+gsc dendrogram = ret
     where
+      (wsum, nsum, ret) = go undefined [] dendrogram
+      wfinal            = (wsum / fromIntegral nsum)
+
       position (Leaf _)       = 0 -- no difference from itself
       position (Branch d _ _) = d
 
-      go wfinal _ cs (Branch d l r) =
-          let (wl, nl, l') = go wfinal d ((el / wl) : cs) l
-              (wr, nr, r') = go wfinal d ((er / wr) : cs) r
+      go _ cs (Branch d l r) =
+          let (wl, nl, l') = go d ((el / wl) : cs) l
+              (wr, nr, r') = go d ((er / wr) : cs) r
 
               el = d - position l -- edge length to left branch
               er = d - position r --          ...to right branch
@@ -59,7 +60,7 @@ gsc dendro   = let (wsum, nsum, r) = go wfinal undefined [] dendro
               wsum = wl + wr + el + er
               nsum = nl + nr
           in wsum `seq` nsum `seq` (wsum, nsum, Branch d l' r')
-      go wfinal d cs (Leaf x) =
+      go d cs (Leaf x) =
           -- O(n) worst case, O(log n) best case (balanced dendrogram)
           let w = foldl' (\curw c -> curw + curw * c) d (tail cs)
           in (0, 1 :: Int, Leaf (x, w / wfinal))
