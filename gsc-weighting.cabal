@@ -1,5 +1,5 @@
 Name:                gsc-weighting
-Version:             0.1
+Version:             0.1.0.1
 Synopsis:            Generic implementation of Gerstein/Sonnhammer/Chothia weighting.
 License:             BSD3
 License-file:        LICENSE
