@@ -42,16 +42,18 @@ import Data.Clustering.Hierarchical (Dendrogram(..))
 --
 -- which is exactly what they calculated.
 gsc :: Fractional d => Dendrogram d a -> Dendrogram d (a, d)
-gsc (Leaf x)   = Leaf (x,1)
-gsc dendrogram = ret
+gsc (Leaf x)                  = Leaf (x,1)
+gsc b@(Branch d _ _) | d == 0 = fmap (flip (,) 1) b
+gsc dendrogram                = ret
     where
-      (wsum, nsum, ret) = go undefined [] dendrogram
-      wfinal            = (wsum / fromIntegral nsum)
+      (wsumF, nsumF, ret) = go undefined [] dendrogram
+      wfinal              = (wsumF / fromIntegral nsumF)
 
       position (Leaf _)       = 0 -- no difference from itself
       position (Branch d _ _) = d
 
-      go _ cs (Branch d l r) =
+      go d' cs b@(Branch d _ _) | d == 0 = zeroBranch d' cs b
+      go _  cs   (Branch d l r) =
           let (wl, nl, l') = go d ((el / wl) : cs) l
               (wr, nr, r') = go d ((er / wr) : cs) r
 
@@ -65,3 +67,16 @@ gsc dendrogram = ret
           -- O(n) worst case, O(log n) best case (balanced dendrogram)
           let w = foldl' (\curw c -> curw + curw * c) d (tail cs)
           in (0, 1 :: Int, Leaf (x, w / wfinal))
+
+      -- special case for branches where the distance is zero.
+      zeroBranch d' cs b =
+          let w  = foldl' (\curw c -> curw + curw * c) d' (tail cs)
+              wf = w / (wfinal * fromIntegral nsum)
+              setWeights (Leaf x) = (1, Leaf (x, wf))
+              setWeights (Branch d l r) =
+                  let (nl, l') = setWeights l
+                      (nr, r') = setWeights r
+                      ns = nl + nr
+                  in ns `seq` (ns, Branch d l' r')
+              (nsum, ret) = setWeights b
+          in (0, nsum, ret)
