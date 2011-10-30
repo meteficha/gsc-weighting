@@ -1,7 +1,7 @@
 module Data.Weighting.GSC where
 
 import Data.List (foldl')
-import Data.Clustering.Hierarchical (Dendrogram(..))
+import Data.Clustering.Hierarchical (Dendrogram(..), Distance)
 
 -- | /O(n^2)/ Calculates the Gerstein\/Sonnhammer\/Chothia
 -- weights for all elements of a dendrogram.  Weights are
@@ -41,7 +41,7 @@ import Data.Clustering.Hierarchical (Dendrogram(..))
 -- @
 --
 -- which is exactly what they calculated.
-gsc :: Fractional d => Dendrogram d a -> Dendrogram d (a, d)
+gsc :: Dendrogram a -> Dendrogram (a, Distance)
 gsc (Leaf x)                  = Leaf (x,1)
 gsc b@(Branch d _ _) | d == 0 = fmap (flip (,) 1) b
 gsc dendrogram                = ret
