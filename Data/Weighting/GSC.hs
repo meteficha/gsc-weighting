@@ -78,5 +78,5 @@ gsc dendrogram                = ret
                       (nr, r') = setWeights r
                       ns = nl + nr
                   in ns `seq` (ns, Branch d l' r')
-              (nsum, ret) = setWeights b
-          in (0, nsum, ret)
+              (nsum, retz) = setWeights b
+          in (0, nsum, retz)
