@@ -32,6 +32,11 @@ Description:
     (i.e. elements below that branches are all equal with respect
     to distance metric that was used to create the dendrogram).
 
+
+Source-repository head
+  type: darcs
+  location: http://patch-tag.com/r/felipe/gsc-weighting
+
 Library
   Exposed-modules:
     Data.Weighting.GSC
