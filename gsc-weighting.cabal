@@ -39,7 +39,7 @@ Description:
 
 Source-repository head
   type: darcs
-  location: http://patch-tag.com/r/felipe/gsc-weighting
+  location: https://github.com/meteficha/gsc-weighting
 
 Library
   Exposed-modules:
